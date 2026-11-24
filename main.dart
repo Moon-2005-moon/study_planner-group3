@@ -21,10 +21,19 @@ class MyApp extends StatelessWidget {
 }
 
 // STATIC: Study Planner screen
-class StudyPlannerScreen extends StatelessWidget {
+class StudyPlannerScreen extends StatefulWidget {
   const StudyPlannerScreen({super.key});
-
-  @override
+@override
+State<StudyPlannerScreen> createState() => _StudyPlannerScreenState();
+}
+class _StudyPlannerScreenState extends State<StudyPlannerScreen> {
+       // LOGIC: Study goals
+List<Map<String, dynamic>> goals = [
+  {'subject': 'Mathematics', 'hours': 3, 'done': false},
+  {'subject': 'Programming', 'hours': 2, 'done': false},
+  {'subject': 'Database', 'hours': 4, 'done': false},
+];
+@override
   Widget build(BuildContext context) {
     return Scaffold(
       // STATIC: App bar
@@ -52,18 +61,49 @@ class StudyPlannerScreen extends StatelessWidget {
 
             const SizedBox(height: 15),
 
-            // STATIC: First goal card
-            Card(
-              child: ListTile(
-                leading: const Icon(
-                  Icons.menu_book,
-                  color: Colors.blue,
-                ),
-                title: const Text('Mathematics'),
-                subtitle: const Text('Study time'),
-                trailing: const Text('3 Hours'),
-              ),
-            ),
+            // LOGIC: Display study goals
+            Expanded(
+            child: ListView.builder(
+           itemCount: goals.length,
+           itemBuilder: (context, index) {
+           return Card(
+           child: ListTile(
+           leading: Checkbox(
+           value: goals[index]['done'],
+          onChanged: (value) {
+             setState(() {
+          goals[index]['done'] = value!;
+    });
+  },
+),
+title: Text(
+  goals[index]['subject'],
+  style: TextStyle(
+    decoration: goals[index]['done']
+        ? TextDecoration.lineThrough
+        : TextDecoration.none,
+  ),
+),
+           subtitle: const Text('Study time'),
+           trailing: Row(
+  mainAxisSize: MainAxisSize.min,
+  children: [
+    Text('${goals[index]['hours']} Hours'),
+    IconButton(
+      icon: const Icon(Icons.delete),
+      onPressed: () {
+        setState(() {
+          goals.removeAt(index);
+        });
+      },
+    ),
+  ],
+),
+        ),
+      );
+    },
+  ),
+),
 
             // STATIC: Second goal card
             Card(
@@ -96,7 +136,15 @@ class StudyPlannerScreen extends StatelessWidget {
 
       // STATIC: Floating Action Button
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+  setState(() {
+    goals.add({
+      'subject': 'Mobile Development',
+      'hours': 2,
+      'done': false,
+    });
+  });
+},
         child: const Icon(Icons.add),
       ),
     );
